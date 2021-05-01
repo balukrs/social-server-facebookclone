@@ -27,6 +27,7 @@ connection.once("open", function () {
 
 // Routers initialising
 app.use("/social", require("./routes/user"));
+app.use("/social", require("./routes/post"));
 
 //Listner
 app.listen(PORT, () => {
