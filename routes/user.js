@@ -14,14 +14,14 @@ router.post("/register", async (req, res) => {
   const { error, value } = registervalidate(req);
 
   if (error) {
-    return res.status(400).json("Error :" + error);
+    return res.send(error);
   }
 
   // Checking if the user is already in database
   const usercheck = await User.findOne({ email: req.body.email });
 
   if (usercheck) {
-    return res.status(400).json("Error :" + "Email already exist ");
+    return res.send("Email already exist ");
   }
 
   //Hash Password
@@ -35,10 +35,10 @@ router.post("/register", async (req, res) => {
   });
   try {
     const response = await newUser.save();
-    res.send("User Added..!");
+    res.send("success");
   } catch (err) {
     if (err) {
-      return res.status(400).json("Error :" + err);
+      return res.status(400).send("Error :" + err);
     }
   }
 });
@@ -50,14 +50,14 @@ router.post("/login", async (req, res) => {
   const { error, value } = loginvalidate(req);
 
   if (error) {
-    return res.status(400).json("Error :" + error);
+    return res.send(error);
   }
 
   // Checking if the email exist in database
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return res.status(400).json("Error :" + "Email does not exist");
+    return res.send("Email does not exist");
   }
 
   // Password Validation
@@ -67,13 +67,31 @@ router.post("/login", async (req, res) => {
   );
 
   if (!passwordcheck) {
-    return res.status(400).json("Error :" + "Password is wrong");
+    return res.send("Error :" + "Password is wrong");
   }
 
   const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
 
-  res.send(token);
-  // res.send("Logged In");
+  res.cookie("token", token, { httpOnly: true, maxAge: 10000 });
+  res.status(200).send("loginsuccess");
+});
+
+// Validating the jwt token
+router.get("/login", async (req, res) => {
+  const token = req.cookies.token || "";
+
+  // Check if token is present in cookie
+  if (!token) {
+    return res.send("loggedout").status(401);
+  }
+
+  const decrypt = await jwt.verify(token, process.env.SECRET_KEY);
+  res.status(200).send({ id: decrypt.id });
+});
+
+//Clearing cookie along with jwt token
+router.get("/logout", async (req, res) => {
+  res.status(202).clearCookie("token").send("cookiecleared");
 });
 
 module.exports = router;
