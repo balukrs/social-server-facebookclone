@@ -13,10 +13,9 @@ const upload = multer({
 router.post("/post", upload.single("contentupload"), async (req, res) => {
   const userid = req.body.userid;
   const content = req.body.post;
-  const buffer = await sharp(req.file.buffer)
-    .resize({ width: 500, height: 500 })
-    .webp()
-    .toBuffer();
+  const buffer = req.file
+    ? await sharp(req.file.buffer).resize({ width: 500 }).webp().toBuffer()
+    : null;
 
   const newPost = new Post({
     userid: userid,
