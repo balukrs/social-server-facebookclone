@@ -70,7 +70,10 @@ router.post("/login", async (req, res) => {
     return res.send("Error :" + "Password is wrong");
   }
 
-  const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    process.env.SECRET_KEY
+  );
 
   res.cookie("token", token, { httpOnly: true });
   res.status(200).send("loginsuccess");
@@ -86,7 +89,7 @@ router.get("/login", async (req, res) => {
   }
 
   const decrypt = await jwt.verify(token, process.env.SECRET_KEY);
-  res.status(200).send({ id: decrypt.id });
+  res.status(200).send({ id: decrypt.id, username: decrypt.username });
 });
 
 //Clearing cookie along with jwt token

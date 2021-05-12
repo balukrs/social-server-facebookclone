@@ -12,6 +12,7 @@ const upload = multer({
 // Creating a Post
 router.post("/post", upload.single("contentupload"), async (req, res) => {
   const userid = req.body.userid;
+  const username = req.body.username;
   const content = req.body.post;
   const buffer = req.file
     ? await sharp(req.file.buffer).resize({ width: 500 }).webp().toBuffer()
@@ -19,6 +20,7 @@ router.post("/post", upload.single("contentupload"), async (req, res) => {
 
   const newPost = new Post({
     userid: userid,
+    username: username,
     content: content,
     contentimg: buffer,
   });
@@ -33,10 +35,10 @@ router.post("/post", upload.single("contentupload"), async (req, res) => {
   }
 });
 
-//Getting all post
-router.get("/post", async (req, res) => {
+//Getting all post ids
+router.get("/postid", async (req, res) => {
   try {
-    const response = await Post.find();
+    const response = await Post.distinct("_id", {});
     res.json(response);
   } catch (err) {
     if (err) {
@@ -45,8 +47,20 @@ router.get("/post", async (req, res) => {
   }
 });
 
-// Getting post by unique post id
+//Getting unique post by post id
 router.get("/post/:id", async (req, res) => {
+  try {
+    const response = await Post.findOne({ _id: req.params.id });
+    res.json(response);
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Getting post by unique user id
+router.get("/userpost/:id", async (req, res) => {
   try {
     const response = await Post.find({ userid: req.params.id });
     res.json(response);

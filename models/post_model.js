@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const postmodel = new Schema({
   userid: { type: String },
+  username: { type: String },
   content: {
     type: String,
     required: true,
