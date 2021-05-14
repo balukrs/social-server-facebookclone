@@ -20,6 +20,7 @@ const postmodel = new Schema({
     {
       username: { type: String },
       createdAt: { type: Date, default: Date.now },
+      content: { type: String },
     },
   ],
   likes: [

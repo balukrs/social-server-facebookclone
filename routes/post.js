@@ -59,10 +59,44 @@ router.get("/post/:id", async (req, res) => {
   }
 });
 
-// Getting post by unique user id
+// Getting posts by unique user id
 router.get("/userpost/:id", async (req, res) => {
   try {
     const response = await Post.find({ userid: req.params.id });
+    res.json(response);
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Updating the comments
+router.post("/comments", async (req, res) => {
+  try {
+    const response = await Post.updateOne(
+      { _id: req.body.id },
+      {
+        $push: {
+          comments: req.body.comment,
+        },
+      }
+    );
+    res.json("updated");
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Getting comments by post id
+router.get("/comments/:id", async (req, res) => {
+  try {
+    const response = await Post.findOne(
+      { _id: req.params.id },
+      { comments: 1 }
+    );
     res.json(response);
   } catch (err) {
     if (err) {
