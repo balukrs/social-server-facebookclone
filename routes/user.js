@@ -2,6 +2,14 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+// multer options
+const multer = require("multer");
+const sharp = require("sharp");
+const upload = multer({
+  type: Buffer,
+});
+
 // Model
 const User = require("../models/user_model");
 
@@ -95,6 +103,52 @@ router.get("/login", async (req, res) => {
 //Clearing cookie along with jwt token
 router.get("/logout", async (req, res) => {
   res.status(202).clearCookie("token").send("cookiecleared");
+});
+
+// Getting all users
+router.get("/users", async (req, res) => {
+  try {
+    const response = await User.find({}, { password: 0, email: 0 });
+    res.json(response);
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Uploading Profilepic
+
+router.post("/profilepic", upload.single("profileupload"), async (req, res) => {
+  const buffer = req.file
+    ? await sharp(req.file.buffer).webp().toBuffer()
+    : null;
+
+  try {
+    const response = await User.updateOne(
+      { _id: req.body.id },
+      {
+        $set: { img: buffer },
+      }
+    );
+    res.json("uploaded");
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Sending user profilepic
+router.get("/profilepic/:id", async (req, res) => {
+  try {
+    const response = await User.findOne({ _id: req.params.id }, { img: 1 });
+    res.json(response);
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
 });
 
 module.exports = router;

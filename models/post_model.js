@@ -19,13 +19,14 @@ const postmodel = new Schema({
   comments: [
     {
       username: { type: String },
+      userid: { type: String },
       createdAt: { type: Date, default: Date.now },
       content: { type: String },
     },
   ],
   likes: [
     {
-      username: { type: String },
+      userid: { type: String },
     },
   ],
 });

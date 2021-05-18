@@ -74,7 +74,7 @@ router.get("/userpost/:id", async (req, res) => {
 // Updating the comments
 router.post("/comments", async (req, res) => {
   try {
-    const response = await Post.updateOne(
+    const posting = await Post.updateOne(
       { _id: req.body.id },
       {
         $push: {
@@ -82,7 +82,8 @@ router.post("/comments", async (req, res) => {
         },
       }
     );
-    res.json("updated");
+    const response = await Post.findOne({ _id: req.body.id }, { comments: 1 });
+    res.json(response);
   } catch (err) {
     if (err) {
       return res.status(400).json("Error :" + err);
@@ -90,14 +91,46 @@ router.post("/comments", async (req, res) => {
   }
 });
 
-// Getting comments by post id
-router.get("/comments/:id", async (req, res) => {
+// Updating Likes
+router.post("/likes/:userid/:postid", async (req, res) => {
   try {
-    const response = await Post.findOne(
-      { _id: req.params.id },
-      { comments: 1 }
-    );
-    res.json(response);
+    const pst = await Post.findOne({ _id: req.params.postid }, { likes: 1 });
+    const likes = pst.likes;
+
+    const unique = likes.length
+      ? likes.some((item) => item.userid === req.params.userid)
+      : false;
+
+    if (unique) {
+      const removelike = await Post.updateOne(
+        { _id: req.params.postid },
+        {
+          $pull: {
+            likes: { userid: req.params.userid },
+          },
+        }
+      );
+      const removedpst = await Post.findOne(
+        { _id: req.params.postid },
+        { likes: 1 }
+      );
+      res.json({ likes: removedpst.likes.length, likestatus: "removed" });
+    } else {
+      const updatelike = await Post.updateOne(
+        { _id: req.params.postid },
+        {
+          $push: {
+            likes: { userid: req.params.userid },
+          },
+        }
+      );
+
+      const updatedpst = await Post.findOne(
+        { _id: req.params.postid },
+        { likes: 1 }
+      );
+      res.json({ likes: updatedpst.likes.length, likestatus: "added" });
+    }
   } catch (err) {
     if (err) {
       return res.status(400).json("Error :" + err);

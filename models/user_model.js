@@ -24,7 +24,9 @@ const userschema = new Schema({
     default: Date.now,
   },
   friends: [String],
-  img: { data: Buffer, contentType: String },
+  img: {
+    type: Buffer,
+  },
 });
 
 const User = mongoose.model("User", userschema);
