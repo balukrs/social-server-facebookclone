@@ -62,7 +62,10 @@ router.get("/post/:id", async (req, res) => {
 // Getting posts by unique user id
 router.get("/userpost/:id", async (req, res) => {
   try {
-    const response = await Post.find({ userid: req.params.id });
+    const response = await Post.find(
+      { userid: req.params.id },
+      { content: 1, contentimg: 1 }
+    );
     res.json(response);
   } catch (err) {
     if (err) {
@@ -141,8 +144,8 @@ router.post("/likes/:userid/:postid", async (req, res) => {
 //Deleting post
 router.delete("/post/:id", async (req, res) => {
   try {
-    const response = await Post.findByIdAndDelete(req.params.id);
-    res.json("file deleted");
+    const response = await Post.findOneAndDelete({ _id: req.params.id });
+    res.json("deleted");
   } catch (err) {
     if (err) {
       return res.status(400).json("Error :" + err);

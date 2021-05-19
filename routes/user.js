@@ -14,7 +14,11 @@ const upload = multer({
 const User = require("../models/user_model");
 
 // Validation
-const { registervalidate, loginvalidate } = require("./validation/validation");
+const {
+  registervalidate,
+  loginvalidate,
+  editpassword,
+} = require("./validation/validation");
 
 //Creating new user//Register
 router.post("/register", async (req, res) => {
@@ -144,6 +148,41 @@ router.get("/profilepic/:id", async (req, res) => {
   try {
     const response = await User.findOne({ _id: req.params.id }, { img: 1 });
     res.json(response);
+  } catch (err) {
+    if (err) {
+      return res.status(400).json("Error :" + err);
+    }
+  }
+});
+
+// Changing username
+router.post("/editpassword", async (req, res) => {
+  const { error, value } = editpassword(req);
+
+  if (error) {
+    return res.send(error);
+  }
+
+  const user = await User.findOne({ _id: req.body.userid }, { password: 1 });
+
+  const passwordcheck = await bcrypt.compareSync(
+    req.body.oldpassword,
+    user.password
+  );
+
+  if (!passwordcheck) {
+    return res.json({ error: "old password incorrect" });
+  }
+
+  const salt = await bcrypt.genSaltSync(10);
+  const hashpassword = await bcrypt.hashSync(req.body.password, salt);
+
+  try {
+    const response = await User.updateOne(
+      { _id: req.body.userid },
+      { $set: { password: hashpassword } }
+    );
+    res.json("updated");
   } catch (err) {
     if (err) {
       return res.status(400).json("Error :" + err);

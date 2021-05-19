@@ -34,5 +34,18 @@ const loginvalidate = (req) => {
   });
 };
 
+const editpassword = (req) => {
+  const schema = Joi.object({
+    oldpassword: Joi.string().min(8).max(20).required(),
+    password: Joi.string().min(8).max(20).required(),
+  }).with("oldpassword", "password");
+
+  return schema.validate({
+    oldpassword: req.body.oldpassword,
+    password: req.body.password,
+  });
+};
+
 module.exports.registervalidate = registervalidate;
 module.exports.loginvalidate = loginvalidate;
+module.exports.editpassword = editpassword;
