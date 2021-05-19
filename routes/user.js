@@ -89,8 +89,7 @@ router.post("/login", async (req, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    path: "/",
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
   });
   res.status(200).send("loginsuccess");
 });
