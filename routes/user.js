@@ -87,7 +87,7 @@ router.post("/login", async (req, res) => {
     process.env.SECRET_KEY
   );
 
-  res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
+  res.cookie("token", token, { httpOnly: true, sameSite: "none" });
   res.status(200).send("loginsuccess");
 });
 
