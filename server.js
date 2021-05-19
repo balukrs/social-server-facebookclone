@@ -18,6 +18,7 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+app.set("trust proxy", 1);
 
 const uri = process.env.DB_URI;
 mongoose.connect(uri, {
