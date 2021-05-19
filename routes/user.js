@@ -90,7 +90,7 @@ router.post("/login", async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,
-    domain: ".herokuapp.com",
+    path: "/",
   });
   res.status(200).send("loginsuccess");
 });
