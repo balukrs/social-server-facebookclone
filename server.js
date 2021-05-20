@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://master.d3bu302d9gqem5.amplifyapp.com",
     credentials: true,
   })
 );
