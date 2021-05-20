@@ -90,8 +90,9 @@ router.post("/login", async (req, res) => {
   const cookieConfig = {
     httpOnly: true,
     secure: true,
-    maxAge: 1000000,
     sameSite: "none",
+    domain: "localhost:3000",
+    path: "/social",
   };
 
   res.cookie("token", token, cookieConfig);
