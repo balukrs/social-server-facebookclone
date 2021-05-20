@@ -91,8 +91,6 @@ router.post("/login", async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    domain: "localhost:3000",
-    path: "/social",
   };
 
   res.cookie("token", token, cookieConfig);
