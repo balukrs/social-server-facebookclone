@@ -12,13 +12,12 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: "https://master.drdmxw5oqy6h3.amplifyapp.com",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
 app.use(cookieParser());
 app.use(express.json());
-app.set("trust proxy", 1);
 
 const uri = process.env.DB_URI;
 mongoose.connect(uri, {
