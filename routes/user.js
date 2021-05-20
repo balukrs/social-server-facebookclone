@@ -91,6 +91,7 @@ router.post("/login", async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
+    domain: ".amplifyapp.com",
   };
 
   res.cookie("token", token, cookieConfig);
