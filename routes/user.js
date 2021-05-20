@@ -87,9 +87,13 @@ router.post("/login", async (req, res) => {
     process.env.SECRET_KEY
   );
 
-  res.cookie("token", token, {
+  const cookieConfig = {
     httpOnly: true,
-  });
+    secure: true,
+    maxAge: 1000000,
+  };
+
+  res.cookie("token", token, cookieConfig);
   res.status(200).send("loginsuccess");
 });
 
